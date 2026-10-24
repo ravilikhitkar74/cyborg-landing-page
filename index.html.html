@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEXUS-9 | Cyborg Landing Page</title>
+<style>
+  :root{
+    --bg:#05070d; --panel:#0b1220; --cyan:#00f0ff; --magenta:#ff2bd6; --lime:#b6ff3c;
+    --text:#d7e6ff; --muted:#7f93b5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;overflow-x:hidden}
+  h1,h2,h3,.mono{font-family:"Courier New",ui-monospace,monospace;letter-spacing:.08em}
+  /* scanlines + grid */
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+  .grid-bg{position:fixed;inset:0;z-index:-1;
+    background:
+      linear-gradient(rgba(0,240,255,.06) 1px,transparent 1px) 0 0/48px 48px,
+      linear-gradient(90deg,rgba(0,240,255,.06) 1px,transparent 1px) 0 0/48px 48px,
+      radial-gradient(circle at 70% 20%,rgba(255,43,214,.15),transparent 50%),
+      radial-gradient(circle at 20% 80%,rgba(0,240,255,.12),transparent 50%);}
+  nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 6vw;background:rgba(5,7,13,.7);backdrop-filter:blur(8px);border-bottom:1px solid rgba(0,240,255,.2);z-index:40}
+  .logo{color:var(--cyan);font-weight:700;font-size:1.2rem;text-shadow:0 0 12px var(--cyan)}
+  nav ul{display:flex;gap:28px;list-style:none}
+  nav a{color:var(--text);text-decoration:none;font-size:.85rem;text-transform:uppercase;letter-spacing:.15em;transition:.2s}
+  nav a:hover{color:var(--cyan);text-shadow:0 0 10px var(--cyan)}
+  section{min-height:100vh;padding:120px 6vw 60px;display:flex;align-items:center}
+  .hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;width:100%}
+  .tag{color:var(--lime);font-size:.8rem;margin-bottom:16px}
+  .tag::before{content:"> ";}
+  h1{font-size:clamp(2.4rem,6vw,5rem);line-height:1.05;margin-bottom:20px}
+  .glitch{position:relative;display:inline-block;color:var(--cyan)}
+  .glitch::before,.glitch::after{content:attr(data-text);position:absolute;left:0;top:0;width:100%;overflow:hidden}
+  .glitch::before{color:var(--magenta);animation:g1 2.4s infinite linear alternate-reverse;clip-path:inset(0 0 60% 0)}
+  .glitch::after{color:var(--lime);animation:g2 3s infinite linear alternate-reverse;clip-path:inset(60% 0 0 0)}
+  @keyframes g1{0%{transform:translate(0)}20%{transform:translate(-3px,1px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,2px)}80%{transform:translate(2px,0)}100%{transform:translate(0)}}
+  @keyframes g2{0%{transform:translate(0)}25%{transform:translate(3px,-2px)}50%{transform:translate(-3px,1px)}75%{transform:translate(2px,2px)}100%{transform:translate(0)}}
+  .hero p{color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:28px}
+  .btns{display:flex;gap:16px;flex-wrap:wrap}
+  .btn{padding:14px 28px;font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:.15em;font-size:.85rem;
+    border:1px solid var(--cyan);color:var(--cyan);background:transparent;cursor:pointer;text-decoration:none;
+    clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);transition:.25s}
+  .btn:hover{background:var(--cyan);color:#001015;box-shadow:0 0 24px var(--cyan)}
+  .btn.alt{border-color:var(--magenta);color:var(--magenta)}
+  .btn.alt:hover{background:var(--magenta);color:#14001a;box-shadow:0 0 24px var(--magenta)}
+  /* cyborg head (SVG) */
+  .visual{display:flex;justify-content:center;align-items:center}
+  .visual svg{width:min(460px,90%);filter:drop-shadow(0 0 24px rgba(0,240,255,.45))}
+  .eye{animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+  .scan{animation:scan 3s linear infinite}
+  @keyframes scan{0%{transform:translateY(-120px)}100%{transform:translateY(170px)}}
+  /* features */
+  .features{flex-direction:column;align-items:stretch;gap:40px}
+  .features h2,.specs h2,.cta h2{font-size:clamp(1.6rem,3.5vw,2.6rem);color:var(--cyan);text-shadow:0 0 14px rgba(0,240,255,.5)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
+  .card{background:linear-gradient(160deg,var(--panel),#070b14);border:1px solid rgba(0,240,255,.25);padding:28px;position:relative;
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .card::after{content:"";position:absolute;top:-1px;right:-1px;width:24px;height:24px;border-top:2px solid var(--magenta);border-right:2px solid var(--magenta)}
+  .card:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:0 10px 40px rgba(0,240,255,.2)}
+  .card .ico{font-size:2rem;margin-bottom:14px}
+  .card h3{color:var(--text);margin-bottom:10px;font-size:1.05rem}
+  .card p{color:var(--muted);line-height:1.6;font-size:.95rem}
+  /* specs */
+  .specs{flex-direction:column;align-items:stretch;gap:36px}
+  .bars{display:grid;gap:22px;max-width:720px}
+  .bar label{display:flex;justify-content:space-between;font-family:"Courier New",monospace;font-size:.85rem;margin-bottom:8px;color:var(--text)}
+  .track{height:10px;background:#0f1a2e;border:1px solid rgba(0,240,255,.25)}
+  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--magenta));box-shadow:0 0 12px var(--cyan);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+  /* terminal */
+  .term{background:#02040a;border:1px solid rgba(182,255,60,.4);padding:20px;font-family:"Courier New",monospace;color:var(--lime);
+    max-width:720px;min-height:150px;font-size:.9rem;line-height:1.7}
+  .cursor{display:inline-block;width:9px;height:1em;background:var(--lime);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  /* cta */
+  .cta{flex-direction:column;justify-content:center;text-align:center;gap:24px;align-items:center}
+  .cta p{color:var(--muted);max-width:520px}
+  form{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  input{background:#070b14;border:1px solid var(--cyan);color:var(--text);padding:14px 18px;min-width:260px;font-family:"Courier New",monospace;outline:none}
+  input:focus{box-shadow:0 0 18px rgba(0,240,255,.5)}
+  footer{text-align:center;padding:30px;color:var(--muted);font-size:.8rem;border-top:1px solid rgba(0,240,255,.15)}
+  .reveal{opacity:0;transform:translateY(40px);transition:1s}
+  .reveal.in{opacity:1;transform:none}
+  @media(max-width:860px){.hero{grid-template-columns:1fr}nav ul{display:none}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="logo mono">NEXUS//9</div>
+  <ul>
+    <li><a href="#top">Core</a></li>
+    <li><a href="#features">Upgrades</a></li>
+    <li><a href="#specs">Specs</a></li>
+    <li><a href="#join">Merge</a></li>
+  </ul>
+</nav>
+
+<section id="top">
+  <div class="hero">
+    <div>
+      <div class="tag mono">SYSTEM ONLINE // v9.2.1</div>
+      <h1>BECOME<br><span class="glitch" data-text="MORE THAN">MORE THAN</span><br>HUMAN.</h1>
+      <p>NEXUS-9 fuses neural implants, adaptive alloy limbs and a living AI core into one seamless upgrade. Your body was the first version. This is the next.</p>
+      <div class="btns">
+        <a class="btn" href="#join">Initiate Upgrade</a>
+        <a class="btn alt" href="#features">Explore Systems</a>
+      </div>
+    </div>
+    <div class="visual">
+      <svg viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#1b2a44"/><stop offset="1" stop-color="#0a1222"/>
+          </linearGradient>
+          <clipPath id="faceClip"><path d="M200 30 C300 30 340 110 335 200 C332 270 300 340 250 390 L150 390 C100 340 68 270 65 200 C60 110 100 30 200 30Z"/></clipPath>
+        </defs>
+        <!-- neck -->
+        <rect x="150" y="380" width="100" height="70" fill="url(#metal)" stroke="#00f0ff" stroke-opacity=".5"/>
+        <g stroke="#00f0ff" stroke-opacity=".4"><line x1="150" y1="400" x2="250" y2="400"/><line x1="150" y1="420" x2="250" y2="420"/><line x1="150" y1="440" x2="250" y2="440"/></g>
+        <!-- head -->
+        <path d="M200 30 C300 30 340 110 335 200 C332 270 300 340 250 390 L150 390 C100 340 68 270 65 200 C60 110 100 30 200 30Z" fill="url(#metal)" stroke="#00f0ff" stroke-width="2"/>
+        <!-- human half (right) -->
+        <g clip-path="url(#faceClip)">
+          <rect x="200" y="0" width="200" height="460" fill="#c98f74" opacity=".85"/>
+          <rect x="200" y="0" width="200" height="460" fill="#05070d" opacity=".35"/>
+          <path d="M200 30 L200 390" stroke="#00f0ff" stroke-width="2"/>
+          <!-- scan line -->
+          <rect class="scan" x="60" y="160" width="280" height="4" fill="#00f0ff" opacity=".8"/>
+        </g>
+        <!-- circuit lines (left) -->
+        <g stroke="#00f0ff" stroke-width="1.5" fill="none" opacity=".8">
+          <path d="M100 120 H150 V160 H180"/><path d="M90 220 H140 V260 H170"/><path d="M120 320 H160 V290"/>
+          <path d="M110 80 H170 V110"/>
+        </g>
+        <g fill="#00f0ff"><circle cx="100" cy="120" r="3"/><circle cx="90" cy="220" r="3"/><circle cx="120" cy="320" r="3"/><circle cx="110" cy="80" r="3"/></g>
+        <!-- cyber eye -->
+        <circle class="eye" cx="150" cy="190" r="30" fill="#02040a" stroke="#ff2bd6" stroke-width="3"/>
+        <circle class="eye" cx="150" cy="190" r="14" fill="#ff2bd6"/>
+        <circle cx="150" cy="190" r="5" fill="#fff"/>
+        <path d="M120 190 H180 M150 160 V220" stroke="#ff2bd6" stroke-width="1" opacity=".6"/>
+        <!-- human eye -->
+        <ellipse cx="255" cy="190" rx="22" ry="12" fill="#f4e7dc"/>
+        <circle cx="255" cy="190" r="8" fill="#2a1a10"/><circle cx="257" cy="187" r="2" fill="#fff"/>
+        <!-- mouth -->
+        <path d="M160 320 H240" stroke="#00f0ff" stroke-opacity=".7" stroke-width="2"/>
+        <g stroke="#00f0ff" stroke-opacity=".5"><line x1="175" y1="312" x2="175" y2="328"/><line x1="190" y1="312" x2="190" y2="328"/></g>
+        <!-- antenna -->
+        <line x1="130" y1="50" x2="110" y2="10" stroke="#00f0ff" stroke-width="2"/><circle class="eye" cx="110" cy="10" r="5" fill="#b6ff3c"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="features">
+  <h2 class="mono reveal">// CORE UPGRADES</h2>
+  <div class="cards">
+    <div class="card reveal"><div class="ico">🧠</div><h3 class="mono">NEURAL LINK</h3><p>Thought-speed interface to every connected device. No screens. No lag. Just intent.</p></div>
+    <div class="card reveal"><div class="ico">🦾</div><h3 class="mono">ALLOY LIMBS</h3><p>Titanium-graphene composite frames with 12x grip strength and self-repairing joints.</p></div>
+    <div class="card reveal"><div class="ico">👁️</div><h3 class="mono">OPTIC HUD</h3><p>Thermal, night and zoom vision with a live overlay that never leaves your field of view.</p></div>
+    <div class="card reveal"><div class="ico">🔋</div><h3 class="mono">FUSION CELL</h3><p>A palm-sized reactor delivering 30 days of continuous power on a single charge.</p></div>
+  </div>
+</section>
+
+<section id="specs" class="specs">
+  <h2 class="mono reveal">// DIAGNOSTICS</h2>
+  <div class="bars" id="bars">
+    <div class="bar"><label><span>PROCESSING POWER</span><span>96%</span></label><div class="track"><div class="fill" data-w="96"></div></div></div>
+    <div class="bar"><label><span>REFLEX SPEED</span><span>88%</span></label><div class="track"><div class="fill" data-w="88"></div></div></div>
+    <div class="bar"><label><span>STRUCTURAL INTEGRITY</span><span>92%</span></label><div class="track"><div class="fill" data-w="92"></div></div></div>
+    <div class="bar"><label><span>HUMANITY RETAINED</span><span>41%</span></label><div class="track"><div class="fill" data-w="41"></div></div></div>
+  </div>
+  <div class="term mono" id="term"></div>
+</section>
+
+<section id="join" class="cta">
+  <h2 class="mono reveal">READY TO MERGE?</h2>
+  <p class="reveal">Join the waitlist for the first public NEXUS-9 upgrade cycle. Limited units. No going back.</p>
+  <form id="form" class="reveal">
+    <input type="email" placeholder="enter_email@human.net" required>
+    <button class="btn" type="submit">Request Access</button>
+  </form>
+  <div class="mono" id="msg" style="color:var(--lime);min-height:24px"></div>
+</section>
+
+<footer class="mono">© 2026 NEXUS-9 CORP · A fictional product for a Techfest web development task</footer>
+
+<script>
+  // reveal on scroll + animate bars
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      if(e.target.id === 'bars') e.target.querySelectorAll('.fill').forEach(f => f.style.width = f.dataset.w + '%');
+      if(e.target.id === 'term') typeLines();
+    }
+  }), {threshold:.25});
+  document.querySelectorAll('.reveal,#bars,#term').forEach(el => io.observe(el));
+
+  // terminal typewriter
+  const lines = [
+    "> booting NEXUS-9 core...",
+    "> neural link .......... OK",
+    "> alloy limbs ......... OK",
+    "> optic HUD ........... OK",
+    "> WARNING: human override detected",
+    "> override denied. welcome, upgraded."
+  ];
+  let started = false;
+  function typeLines(){
+    if(started) return; started = true;
+    const t = document.getElementById('term'); let li = 0, ci = 0, out = "";
+    (function tick(){
+      if(li >= lines.length){ t.innerHTML = out + '<span class="cursor"></span>'; return; }
+      const line = lines[li];
+      if(ci <= line.length){ t.innerHTML = out + line.slice(0,ci) + '<span class="cursor"></span>'; ci++; setTimeout(tick, 28); }
+      else { out += line + "<br>"; li++; ci = 0; setTimeout(tick, 250); }
+    })();
+  }
+
+  // eye follows mouse slightly
+  const eyes = document.querySelectorAll('.visual svg .eye');
+  document.addEventListener('mousemove', e => {
+    const x = (e.clientX / innerWidth - .5) * 6, y = (e.clientY / innerHeight - .5) * 6;
+    eyes.forEach(el => el.style.transform = `translate(${x}px,${y}px)`);
+  });
+
+  document.getElementById('form').addEventListener('submit', e => {
+    e.preventDefault();
+    document.getElementById('msg').textContent = "> ACCESS REQUEST LOGGED. STAND BY, HUMAN.";
+    e.target.reset();
+  });
+</script>
+</body>
+</html>
